@@ -1,0 +1,52 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Operating systems ###
+.DS_Store
+Thumbs.db
+
+### Local tooling and temporary files ###
+.agents/
+.claude/
+fix_svc.py
+package-lock.json
+*.local.md
+*.private.md
+
+### Local secret overrides ###
+.env
+.env.*
+!.env.example
+application-local.yaml
+application-local.yml

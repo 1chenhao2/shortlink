@@ -1,0 +1,114 @@
+# 数据源集合
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/shortlink?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password:
+
+rules:
+  - !SHARDING
+    tables:
+      t_user:
+        # 真实数据节点，比如数据库源以及数据库在数据库中真实存在的
+        actualDataNodes: ds_0.t_user_${0..15}
+        # 分表策略
+        tableStrategy:
+          # 用于单分片键的标准分片场景
+          standard:
+            # 分片键
+            shardingColumn: username
+            # 分片算法，对应 rules[0].shardingAlgorithms
+            shardingAlgorithmName: user_table_hash_mod
+      t_group:
+        actualDataNodes: ds_0.t_group_${0..15}
+        tableStrategy:
+            standard:
+                shardingColumn: username
+                shardingAlgorithmName: group_table_hash_mod
+      t_link_goto:
+        actualDataNodes: ds_0.t_link_goto_${0..15}
+        tableStrategy:
+          standard:
+            shardingColumn: full_short_url
+            shardingAlgorithmName: link_goto_table_hash_mod
+      t_link:
+        # 真实数据节点，比如数据库源以及数据库在数据库中真实存在的
+        actualDataNodes: ds_0.t_link_${0..15}
+        # 分表策略
+        tableStrategy:
+          # 用于单分片键的标准分片场景
+          standard:
+            # 分片键
+            shardingColumn: gid
+            # 分片算法，对应 rules[0].shardingAlgorithms
+            shardingAlgorithmName: link_table_hash_mod
+      t_link_access_stats:
+        actualDataNodes: ds_0.t_link_access_stats_${0..15}
+        tableStrategy:
+          standard:
+            shardingColumn: gid
+            shardingAlgorithmName: link_access_stats_table_hash_mod
+      t_link_locale_stats:
+        actualDataNodes: ds_0.t_link_locale_stats
+      t_link_os_stats:
+        actualDataNodes: ds_0.t_link_os_stats
+      t_link_browser_stats:
+        actualDataNodes: ds_0.t_link_browser_stats
+      t_link_access_logs:
+        actualDataNodes: ds_0.t_link_access_logs
+      t_link_device_stats:
+        actualDataNodes: ds_0.t_link_device_stats
+      t_link_network_stats:
+        actualDataNodes: ds_0.t_link_network_stats
+      t_link_stats_today:
+        actualDataNodes: ds_0.t_link_stats_today
+    # 分片算法
+    shardingAlgorithms:
+      # 数据表分片算法
+      user_table_hash_mod:
+        # 使用行表达式分片算法
+        type: INLINE
+        # 分片表达式：根据 username 的 hash 值对 16 取模
+        props:
+          algorithm-expression: t_user_${Math.abs(username.hashCode()) % 16}
+      group_table_hash_mod:
+          type: INLINE
+          props:
+              algorithm-expression: t_group_${Math.abs(username.hashCode()) % 16}
+      link_goto_table_hash_mod:
+        type: INLINE
+        props:
+          algorithm-expression: t_link_goto_${Math.abs(full_short_url.hashCode()) % 16}
+      link_table_hash_mod:
+        # 使用行表达式分片算法
+        type: INLINE
+        # 分片表达式：根据 gid 的 hash 值对 16 取模
+        props:
+          algorithm-expression: t_link_${Math.abs(gid.hashCode()) % 16}
+      link_access_stats_table_hash_mod:
+        type: INLINE
+        props:
+          algorithm-expression: t_link_access_stats_${Math.abs(gid.hashCode()) % 16}
+  - !ENCRYPT
+    tables: # 表规则定义
+      t_user:
+        columns:
+          phone:
+            cipher:
+              name: phone
+              encryptorName: common_encryptor
+          mail:
+            cipher:
+              name: mail
+              encryptorName: common_encryptor
+    encryptors:
+      common_encryptor:
+        type: AES
+        props:
+          aes-key-value: change-me-16byte
+          digest-algorithm-name: SHA-256
+# 展现逻辑 SQL & 真实 SQL
+props:
+  sql-show: true

@@ -1,0 +1,28 @@
+### 登录
+POST http://localhost:8002/api/short-link/admin/v1/user/login
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "password": "123456"
+}
+
+### 查询分组（替换 token）
+GET http://localhost:8002/api/short-link/admin/v1/group
+username: demo
+token: REPLACE_ME
+
+### 创建短链接（替换 token）
+POST http://localhost:8002/api/short-link/admin/v1/create
+Content-Type: application/json
+username: demo
+token: REPLACE_ME
+
+{
+  "domain": "localhost:8003",
+  "originUrl": "https://www.example.com/",
+  "gid": "demo-group",
+  "createdType": 0,
+  "validDateType": 0,
+  "describe": "API example"
+}
